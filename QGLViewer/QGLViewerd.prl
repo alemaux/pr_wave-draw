@@ -1,0 +1,5 @@
+QMAKE_PRL_BUILD_DIR = C:/msys64/home/alois/Waves-main/QGLViewer
+QMAKE_PRO_INPUT = QGLViewer.pro
+QMAKE_PRL_TARGET = libQGLViewerd2.dll.a
+QMAKE_PRL_CONFIG = lex yacc debug exceptions depend_includepath testcase_targets import_plugins import_qpa_plugin windows file_copies qmake_use qt warn_on link_prl debug_and_release debug_and_release_target precompile_header shared shared no_plugin_manifest win32 mingw gcc debug DebugBuild Debug build_pass opengl thread create_prl rtti no_keywords build_all embed_manifest_dll debug DebugBuild Debug build_pass have_target dll no_plist exclusive_builds debug_info no_autoqmake uic opengl moc resources
+QMAKE_PRL_VERSION = 2

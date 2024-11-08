@@ -1,0 +1,17 @@
+obj/DataFile.o
+obj/definitions.o
+obj/EquivalentSource.o
+obj/error.o
+obj/Grid.o
+obj/InputPoint.o
+obj/main.o
+obj/Object.o
+obj/PatternPoint.o
+obj/ProjectedGrid.o
+obj/settings.o
+obj/Sphere.o
+obj/Times.o
+obj/ui_parameters.o
+obj/viewer.o
+obj/WaterSurface.o
+obj/Wave.o
