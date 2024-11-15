@@ -16,7 +16,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DMINGW_HAS_SECURE_API=1 -DQT_NO_DEBUG -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_XML_LIB -DQT_CORE_LIB
 CFLAGS        = -fno-keep-inline-dllexport -march=nocona -msahf -mtune=generic -Wa,-mbig-obj -O2 -Wall -Wextra -Wextra $(DEFINES)
-CXXFLAGS      = -fno-keep-inline-dllexport -march=nocona -msahf -mtune=generic -Wa,-mbig-obj -g -fopenmp -O3 -D__MODE_DEBUG=3 -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable -DOPTIM_ENABLE_EIGEN_WRAPPERS -O2 -frtti -Wall -Wextra -Wextra -fexceptions -mthreads $(DEFINES)
+CXXFLAGS      = -fno-keep-inline-dllexport -march=nocona -msahf -mtune=generic -Wa,-mbig-obj -g -fopenmp -O3 -D__MODE_DEBUG=3 -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable -DOPTIM_ENABLE_EIGEN_WRAPPERS -Wdeprecated-declarations -Wdeprecated-copy -O2 -frtti -Wall -Wextra -Wextra -fexceptions -mthreads $(DEFINES)
 INCPATH       = -I. -I. -I/mingw64/include/eigen3 -I../.. -IC:/msys64/mingw64/include/QtOpenGL -IC:/msys64/mingw64/include/QtWidgets -IC:/msys64/mingw64/include/QtGui -IC:/msys64/mingw64/include/QtXml -IC:/msys64/mingw64/include/QtCore -I. -I/include -IC:/msys64/mingw64/share/qt5/mkspecs/win32-g++ 
 LINKER      =        g++
 LFLAGS        =        -Wl,-s -Wl,-subsystem,console -mthreads
@@ -575,7 +575,7 @@ compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: C:/msys64/mingw64/share/qt5/mkspecs/features/data/dummy.cpp
-	g++ -fno-keep-inline-dllexport -march=nocona -msahf -mtune=generic -Wa,-mbig-obj -g -fopenmp -O3 -D__MODE_DEBUG=3 -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable -DOPTIM_ENABLE_EIGEN_WRAPPERS -O2 -frtti -Wall -Wextra -Wextra -dM -E -o moc_predefs.h C:/msys64/mingw64/share/qt5/mkspecs/features/data/dummy.cpp
+	g++ -fno-keep-inline-dllexport -march=nocona -msahf -mtune=generic -Wa,-mbig-obj -g -fopenmp -O3 -D__MODE_DEBUG=3 -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable -DOPTIM_ENABLE_EIGEN_WRAPPERS -Wdeprecated-declarations -Wdeprecated-copy -O2 -frtti -Wall -Wextra -Wextra -dM -E -o moc_predefs.h C:/msys64/mingw64/share/qt5/mkspecs/features/data/dummy.cpp
 
 compiler_moc_header_make_all:
 compiler_moc_header_clean:

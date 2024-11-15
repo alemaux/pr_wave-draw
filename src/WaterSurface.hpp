@@ -90,8 +90,8 @@ private:
   Grid u;
   Grid pattern;
   
-  std::vector<Grid> ampli_re;
-  std::vector<Grid> ampli_im;
+  std::vector<Grid> ampli_re; //réel
+  std::vector<Grid> ampli_im; //imaginaire
 
   int time;
 

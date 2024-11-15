@@ -32,7 +32,7 @@ HEADERS  = $${SRC_DIR}*.hpp
 HEADERS  += $${SRC_DIR}*.h
 SOURCES  = $${SRC_DIR}*.cpp
 
-QMAKE_CXXFLAGS += -g -fopenmp -O3 -D__MODE_DEBUG=3 -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable -DOPTIM_ENABLE_EIGEN_WRAPPERS
+QMAKE_CXXFLAGS += -g -fopenmp -O3 -D__MODE_DEBUG=3 -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable -DOPTIM_ENABLE_EIGEN_WRAPPERS -Wdeprecated-declarations -Wdeprecated-copy
 LIBS += -L./QGLViewer -lQGLViewer -lpthread -lgomp -fopenmp -L/usr/lib
 LIBS += -LC:/msys64/mingw64/bin/ -lSDL2 -lSDL2_image
 LIBS += -L./QGLViewer/ -lQGLViewer2

@@ -54,19 +54,19 @@ void Viewer::treatArguments(int argc, char **argv) {
   running_ = false;
   plot_ = false;
   for (int i = 1;  i < argc; ++i) {
-    std::string s(argv[i]);
+    std::string s(argv[i]); //transforme argv[i] en string standard
     if (s == "-l" || s == "-load") {
       if (argc < i + 2) {
-  	std::cerr<<"\nERROR: wrong number of arguments\n"<<std::endl;
-  	help_parse();
+        std::cerr<<"\nERROR: wrong number of arguments\n"<<std::endl;
+        help_parse();
       }
       std::cout<<"Loading configuration file:"<<" "<<argv[i+1]<<std::endl;
       _surface.setImportConf(argv[i+1]);
       ++i;
     } else if (s == "-p" || s == "-plot") {
       if (argc < i + 2) {
-  	std::cerr<<"\nERROR: wrong number of arguments\n"<<std::endl;
-  	help_parse();
+        std::cerr<<"\nERROR: wrong number of arguments\n"<<std::endl;
+        help_parse();
       }
       std::cout<<"plotting in "<<" "<<argv[i+1]<<std::endl;
       export_file_data = argv[i+1];
@@ -74,8 +74,8 @@ void Viewer::treatArguments(int argc, char **argv) {
       ++i;
     } else if (s == "-stop") {
       if (argc < i + 2) {
-  	std::cerr<<"\nERROR: wrong number of arguments\n"<<std::endl;
-  	help_parse();
+        std::cerr<<"\nERROR: wrong number of arguments\n"<<std::endl;
+        help_parse();
       }
       std::cout<<"Stop at t = "<<argv[i+1]<<std::endl;
       // _surface.setStopTime(atoi(argv[i+1]));
@@ -86,7 +86,10 @@ void Viewer::treatArguments(int argc, char **argv) {
     } else if (s == "-h" || s == "-help") {
       std::cout<<"help"<<std::endl;
       help_parse();
-    } else {
+    }else if(s == "-ld" || s=="-load-default"){
+        _surface.setImportConf("./conf/default_static.conf");
+    }
+    else {
       std::cerr<<"\nERROR: Unknown option\n"<<std::endl;
       help_parse();
     }
@@ -167,7 +170,7 @@ void Viewer::init() {
   _surface.reset();
   
   // Restore previous viewer state.
-  //  restoreStateFromFile();
+    restoreStateFromFile();
 
    // Add custom key description (see keyPressEvent).
   setKeyDescription(Qt::Key_W, "Toggles wire frame display");
@@ -234,13 +237,19 @@ void Viewer::keyPressEvent(QKeyEvent *e) {
     _surface.draw_sources = !_surface.draw_sources;
     handled = true;
     update();
-  } else if ((modifiers == Qt::NoButton) && (e -> key() == Qt::Key_Agrave)){
+  } else if ((modifiers == Qt::NoButton) && (e -> key() == Qt::Key_Agrave)){ //Centre la scène avec à
+      camera()->setOrientation(qglviewer::Quaternion());
       camera()->showEntireScene();
       camera()->setPosition(qglviewer::Vec(30, 15, camera()->position().z / 2));
     handled = true;
-  } else if ((modifiers == Qt::NoButton) && (e -> key() == Qt::Key_P)){
+  } else if ((modifiers == Qt::NoButton) && (e -> key() == Qt::Key_P)){ //affiche la position de la camera avec P
       qglviewer::Vec vec = camera()->position();
       std::cout << "x: " << vec.x << ", y: " << vec.y << ", z: " << vec.z << std::endl;
+      handled = true;
+  } else if ((e->key() == Qt::Key_X) && (modifiers == Qt::CTRL)){ //CTRL+X : ajoute une source au centre
+      qglviewer::Vec center = qglviewer::Vec(settings::n_rows_ * settings::cell_size_ /2, settings::n_cols_ * settings::cell_size_ /2, 0);
+      _surface.addEqSource(center.x, center.y, 0, 1);
+      std::cout<<center.x<<" "<<center.y<<std::endl;
       handled = true;
   }
   if (!handled)
