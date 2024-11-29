@@ -7,6 +7,7 @@ obj/InputPoint.o
 obj/main.o
 obj/Object.o
 obj/PatternPoint.o
+obj/plotter.o
 obj/ProjectedGrid.o
 obj/settings.o
 obj/Sphere.o

@@ -24,6 +24,8 @@
 #include "ui_parameters.hpp"
 #include "error.hpp"
 
+#include "plotter.hpp"
+
 #include <QCursor>
 #include <QKeyEvent>
 #include <QMap>
@@ -238,19 +240,22 @@ void Viewer::keyPressEvent(QKeyEvent *e) {
     handled = true;
     update();
   } else if ((modifiers == Qt::NoButton) && (e -> key() == Qt::Key_Agrave)){ //Centre la scène avec à
-      camera()->setOrientation(qglviewer::Quaternion());
-      camera()->showEntireScene();
-      camera()->setPosition(qglviewer::Vec(30, 15, camera()->position().z / 2));
+    camera()->setOrientation(qglviewer::Quaternion());
+    camera()->showEntireScene();
+    camera()->setPosition(qglviewer::Vec(30, 15, camera()->position().z / 2));
     handled = true;
   } else if ((modifiers == Qt::NoButton) && (e -> key() == Qt::Key_P)){ //affiche la position de la camera avec P
-      qglviewer::Vec vec = camera()->position();
-      std::cout << "x: " << vec.x << ", y: " << vec.y << ", z: " << vec.z << std::endl;
-      handled = true;
+    qglviewer::Vec vec = camera()->position();
+    std::cout << "x: " << vec.x << ", y: " << vec.y << ", z: " << vec.z << std::endl;
+    handled = true;
   } else if ((e->key() == Qt::Key_X) && (modifiers == Qt::CTRL)){ //CTRL+X : ajoute une source au centre
-      qglviewer::Vec center = qglviewer::Vec(settings::n_rows_ * settings::cell_size_ /2, settings::n_cols_ * settings::cell_size_ /2, 0);
-      _surface.addEqSource(center.x, center.y, 0, 1);
-      std::cout<<center.x<<" "<<center.y<<std::endl;
-      handled = true;
+    qglviewer::Vec center = qglviewer::Vec(settings::n_rows_ * settings::cell_size_ /2, settings::n_cols_ * settings::cell_size_ /2, 0);
+    _surface.addEqSource(center.x, center.y, 0, 1);
+    std::cout<<center.x<<" "<<center.y<<std::endl;
+    handled = true;
+  }else if ((e->key() == Qt::Key_H) && (modifiers == Qt::CTRL)){
+      Plotter::exportHeightMap("C:/msys64/home/alois/Waves-main/plots/map.png", &_surface, settings::n_rows_, settings::n_cols_);
+    handled = true;
   }
   if (!handled)
     QGLViewer::keyPressEvent(e);

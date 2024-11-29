@@ -25,18 +25,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     viewer.setWindowTitle("Wave Viewer");
     viewer.treatArguments(argc, argv);
 
-    // Si tu as besoin de traiter les arguments, tu pourrais les gérer ici.
-    // Par exemple, tu peux utiliser GetCommandLine() pour obtenir les arguments.
-
-    std::cout<<"<Arguments>"<<std::endl;
-    for (int i = 0; i<argc; i++){
-        std::cout<< (argv[i]) <<std::endl;
-        if (std::strcmp(argv[i], "-T") == 0){
-            std::cout<<"Test réussi"<<std::endl;
-        }
-    }
-    std::cout<<"</Arguments>"<<std::endl;
-
     viewer.show();
 
     // Exécuter la boucle principale
