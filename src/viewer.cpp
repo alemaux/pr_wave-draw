@@ -150,66 +150,55 @@ float pos[4] = {1.0, 1.0, 1.0, 0.0};
 
 
 void Viewer::init() {
-   glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  // Light0 is the default ambient light
-  glEnable(GL_LIGHT0);
-
-  // Light2 is a classical directionnal light
-  glEnable(GL_LIGHT2);
-  const GLfloat light_ambient2[4] = {0.2f, 0.2f, 0.2f, 1.0};
-  const GLfloat light_diffuse2[4] = {0.2f, 0.2f, 0.2, 1.0};
-  const GLfloat light_specular2[4] = {0.2, 0.2, 0.2, 1.0};
-
-  glLightfv(GL_LIGHT2, GL_AMBIENT, light_ambient2);
-  glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular2);
-  glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
-
-   light2 = new qglviewer::ManipulatedFrame();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+        // Light0 is the default ambient light
+    glEnable(GL_LIGHT0);
+        // Light2 is a classical directionnal light
+    glEnable(GL_LIGHT2);
+    const GLfloat light_ambient2[4] = {0.2f, 0.2f, 0.2f, 1.0};
+    const GLfloat light_diffuse2[4] = {0.2f, 0.2f, 0.2, 1.0};
+    const GLfloat light_specular2[4] = {0.2, 0.2, 0.2, 1.0};
+    glLightfv(GL_LIGHT2, GL_AMBIENT, light_ambient2);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular2);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
+    light2 = new qglviewer::ManipulatedFrame();
     light2->setPosition(0.0, 0.0, 1);
+    _surface.reset();
 
-  _surface.reset();
-  
-  // Restore previous viewer state.
+    // Restore previous viewer state.
     restoreStateFromFile();
 
-   // Add custom key description (see keyPressEvent).
-  setKeyDescription(Qt::Key_W, "Toggles wire frame display");
-  setKeyDescription(Qt::Key_S, "Toogles sources display");
-
-  setSceneRadius(30);
-
-  srand(time(NULL));
-  sphere.create_array();
-  sphere.setSize(0.1);
-  sphere.setColor(0.9f, 0.2f, 0.1f);
-
-  // Opens help window
-  // help();
-
-  glDisable(GL_CULL_FACE);
-
-  if (plot_) {
-  
- std::stringstream ss_plot;
- ss_plot <<export_file_data<<"_plot.txt";
- str_plot = std::string(ss_plot.str());
- if (stream_plot.is_open()) {
-   stream_plot.close();
- }
- INFO("Writing "<<str_plot);
- stream_plot.open(str_plot);
- stream_plot<<"set view map\n";
- stream_plot<<"unset key\n";
- stream_plot<<"unset tics\n";
- stream_plot<<"unset border\n";
- stream_plot<<"unset colorbox\n";
- stream_plot<<"set terminal png size 600, 600\n";
-  }
- if (running_) {
-   startAnimation();
- }
+    // Add custom key description (see keyPressEvent).
+    setKeyDescription(Qt::Key_W, "Toggles wire frame display");
+    setKeyDescription(Qt::Key_S, "Toogles sources display");
+    setSceneRadius(30);
+    srand(time(NULL));
+    sphere.create_array();
+    sphere.setSize(0.1);
+    sphere.setColor(0.9f, 0.2f, 0.1f);
+    // Opens help window
+    // help();
+    glDisable(GL_CULL_FACE);
+    if (plot_) {
+        std::stringstream ss_plot;
+        ss_plot <<export_file_data<<"_plot.txt";
+        str_plot = std::string(ss_plot.str());
+        if (stream_plot.is_open()) {
+            stream_plot.close();
+        }
+        INFO("Writing "<<str_plot);
+        stream_plot.open(str_plot);
+        stream_plot<<"set view map\n";
+        stream_plot<<"unset key\n";
+        stream_plot<<"unset tics\n";
+        stream_plot<<"unset border\n";
+        stream_plot<<"unset colorbox\n";
+        stream_plot<<"set terminal png size 600, 600\n";
+    }
+    if (running_) {
+        startAnimation();
+    }
 }
 
 
@@ -244,6 +233,7 @@ void Viewer::keyPressEvent(QKeyEvent *e) {
     camera()->showEntireScene();
     camera()->setPosition(qglviewer::Vec(30, 15, camera()->position().z / 2));
     handled = true;
+    update();
   } else if ((modifiers == Qt::NoButton) && (e -> key() == Qt::Key_P)){ //affiche la position de la camera avec P
     qglviewer::Vec vec = camera()->position();
     std::cout << "x: " << vec.x << ", y: " << vec.y << ", z: " << vec.z << std::endl;
@@ -253,6 +243,7 @@ void Viewer::keyPressEvent(QKeyEvent *e) {
     _surface.addEqSource(center.x, center.y, 0, 1);
     std::cout<<center.x<<" "<<center.y<<std::endl;
     handled = true;
+    update();
   }else if ((e->key() == Qt::Key_H) && (modifiers == Qt::CTRL)){
       Plotter::exportHeightMap("C:/msys64/home/alois/Waves-main/plots/map.png", &_surface, settings::n_rows_, settings::n_cols_);
     handled = true;
