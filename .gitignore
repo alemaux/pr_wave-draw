@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+#Qt trash
+*.pro.user
+
+#Plots and camera files 
+ampli.txt
+phase.txt
+.qglviewer.xml
