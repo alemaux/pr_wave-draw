@@ -8,6 +8,11 @@
 GLfloat* Sphere::vertices = new GLfloat[Sphere::size_array];
 GLfloat* Sphere::normals = new GLfloat[Sphere::size_array];
 
+Sphere::Sphere(): Object() {
+    m_size = 0.5;
+    setColor(1, 1, 1);
+}
+
 Sphere::Sphere(float s): Object() {
     m_size = s;
     setColor(1, 1, 1);
@@ -26,8 +31,8 @@ void Sphere::setSize(float s) {
    m_size = s;
 }
   
-  void Sphere::animate() {
-  }
+void Sphere::animate() {
+}
 
 void Sphere::draw() {
   glPushMatrix();
@@ -57,47 +62,47 @@ void Sphere::create_array() {
     int index = 0;
 
     for (int i = 0; i < meridians_count; ++i) {
-      theta_prec = theta;
-      theta += theta_step;
-      create_vertex(theta_prec, phi, index);
-      create_vertex(theta, phi, index);
-      create_vertex(theta, phi_prec, index);
-     }
+        theta_prec = theta;
+        theta += theta_step;
+        create_vertex(theta_prec, phi, index);
+        create_vertex(theta, phi, index);
+        create_vertex(theta, phi_prec, index);
+    }
 
     for (int j = 0; j < parallels_count-1; ++j) {
-      phi_prec = phi;
-      phi += phi_step;
-      theta = 0;
-      for (int i = 0; i < meridians_count; ++i) {
-	theta_prec = theta;
-	theta += theta_step;
-	create_vertex(theta, phi_prec, index);
-	create_vertex(theta_prec, phi_prec, index);
-	create_vertex(theta, phi, index);
-	create_vertex(theta_prec, phi, index);
-	create_vertex(theta, phi, index);
-	create_vertex(theta_prec, phi_prec, index);
-      }
+        phi_prec = phi;
+        phi += phi_step;
+        theta = 0;
+        for (int i = 0; i < meridians_count; ++i) {
+            theta_prec = theta;
+            theta += theta_step;
+            create_vertex(theta, phi_prec, index);
+            create_vertex(theta_prec, phi_prec, index);
+            create_vertex(theta, phi, index);
+            create_vertex(theta_prec, phi, index);
+            create_vertex(theta, phi, index);
+            create_vertex(theta_prec, phi_prec, index);
+        }
     }
     phi_prec = phi;
     phi = M_PI;
     theta = 0;
     for (uint i = 0; i < meridians_count; ++i) {
-      theta_prec = theta;
-      theta += theta_step;
-      create_vertex(theta, phi_prec, index);
-      create_vertex(theta_prec, phi_prec, index);
-      create_vertex(theta, phi, index);
+        theta_prec = theta;
+        theta += theta_step;
+        create_vertex(theta, phi_prec, index);
+        create_vertex(theta_prec, phi_prec, index);
+        create_vertex(theta, phi, index);
     }
-  }
+}
 
 void Sphere::create_vertex(float theta, float phi, int &index) {
-  vertices[index] = cos(theta)*sin(phi);
-  vertices[index+1] = sin(theta)*sin(phi);
-  vertices[index+2] = cos(phi);
-  normals[index] = cos(theta)*sin(phi);
-  normals[index+1] = sin(theta)*sin(phi);
-  normals[index+2] = cos(phi);
-  index += 3;
+    vertices[index] = cos(theta)*sin(phi);
+    vertices[index+1] = sin(theta)*sin(phi);
+    vertices[index+2] = cos(phi);
+    normals[index] = cos(theta)*sin(phi);
+    normals[index+1] = sin(theta)*sin(phi);
+    normals[index+2] = cos(phi);
+    index += 3;
 }
 

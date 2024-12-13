@@ -88,7 +88,7 @@ void Viewer::treatArguments(int argc, char **argv) {
     } else if (s == "-h" || s == "-help") {
       std::cout<<"help"<<std::endl;
       help_parse();
-    }else if(s == "-ld" || s=="-load-default"){
+    }else if(s == "-ld" || s=="--load-default"){
         _surface.setImportConf("./conf/default_static.conf");
     }
     else {
@@ -170,15 +170,18 @@ void Viewer::init() {
     restoreStateFromFile();
 
     // Add custom key description (see keyPressEvent).
-    setKeyDescription(Qt::Key_W, "Toggles wire frame display");
-    setKeyDescription(Qt::Key_S, "Toogles sources display");
+    //setKeyDescription(Qt::Key_W, "Toggles wire frame display");
+    //setKeyDescription(Qt::Key_S, "Toogles sources display");
+
     setSceneRadius(30);
     srand(time(NULL));
     sphere.create_array();
     sphere.setSize(0.1);
     sphere.setColor(0.9f, 0.2f, 0.1f);
+
     // Opens help window
     // help();
+
     glDisable(GL_CULL_FACE);
     if (plot_) {
         std::stringstream ss_plot;

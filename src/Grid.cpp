@@ -200,7 +200,7 @@ void Grid::loadTexture(std::string file) {
   height_field = IMG_Load(file.c_str());
   if(height_field == 0) {
     std::cout << "Erreur : " << SDL_GetError() << std::endl;
-     std::exit(1);
+    std::exit(1);
   }
   setValues(height_field);
 }

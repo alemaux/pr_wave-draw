@@ -39,6 +39,7 @@ WaterSurface::WaterSurface() {
   import_ = false;
   export_ = false;
   load_conf = false;
+  draw_sources = false;
 
   stop_time = 1e4;
 
@@ -64,8 +65,8 @@ void WaterSurface::clear() {
 void WaterSurface::reset() {
   clear();
   createTabs();
-  sphere_source.setSize(0.1);
-  sphere_source.setColor(1.0f, 0.0f, 1.0f);
+  sphere_source.setSize(0.5);
+  sphere_source.setColor(0.8f, 0.2f, 1.0f);
   
   srand (std::time(NULL));
   
@@ -160,28 +161,27 @@ void WaterSurface::setAmpli() {
 }
 
 void WaterSurface::setAmpli(FLOAT t) {
-  std::list<Wave*>::iterator it;
-  for (int w = 0; w < nb_wl; ++w) {
-    ampli_re[w].reset(0);
-    ampli_im[w].reset(0);
+    std::list<Wave*>::iterator it;
+    for (int w = 0; w < nb_wl; ++w) {
+        ampli_re[w].reset(0);
+        ampli_im[w].reset(0);
 
-    std::list<Wave*> waves_wl = waves[w];
+        std::list<Wave*> waves_wl = waves[w];
 
-    for (it = waves_wl.begin(); it != waves_wl.end(); ++it) {
-#pragma omp parallel for
-      for (int i = 0; i < n_rows_ - 1; i++) {
-	FLOAT x = cell_size_*i;
-	for (int j = 0; j < n_cols_ - 1; j++) {
-	  FLOAT y = cell_size_*j;
-	  ampli_re[w](i, j) += real((*it)->heightc(x, y, t));
-	  ampli_im[w](i, j) += imag((*it)->heightc(x, y, t));
-	}
-      }
+        for (it = waves_wl.begin(); it != waves_wl.end(); ++it) {
+            #pragma omp parallel for
+            for (int i = 0; i < n_rows_ - 1; i++) {
+                FLOAT x = cell_size_*i;
+                for (int j = 0; j < n_cols_ - 1; j++) {
+                    FLOAT y = cell_size_*j;
+                    ampli_re[w](i, j) += real((*it)->heightc(x, y, t));
+                    ampli_im[w](i, j) += imag((*it)->heightc(x, y, t));
+                }
+            }
+        }
     }
-
-  }
-  
 }
+
 
 FLOAT WaterSurface::height(int i, int j) const {
   return u(i, j);
@@ -198,6 +198,7 @@ void WaterSurface::addEqSource(FLOAT x, FLOAT y, FLOAT wl, COMPLEX ampli) {
     ((EquivalentSource*)w)->setAmplitude(ampli);
     waves[ind].push_back(w);
   }
+  sourcesPos.push_back(VEC2(x, y));
 }
 
 
@@ -244,8 +245,17 @@ void WaterSurface::draw() {
   glTranslatef(30, 0, 0);
   pattern.draw();
   glPopMatrix();
-}
 
+  if (draw_sources) {
+        for (auto &it : sourcesPos) {
+            VEC2 c = it;
+            glPushMatrix();
+            glTranslatef(c[0], c[1], 1.0f);
+            sphere_source.draw();
+            glPopMatrix();
+        }
+    }
+}
 
 
 void WaterSurface::exportAmplitude(std::string file) const {
@@ -534,10 +544,9 @@ VEC3 WaterSurface::getPosGrid(int i) const {
 }
 
 FLOAT WaterSurface::minWL() const {
-  return wave_lenghts[0];
+    return wave_lenghts[0];
 }
 FLOAT WaterSurface::maxWL() const {
-  return wave_lenghts[nb_wl-1];
+    return wave_lenghts[nb_wl-1];
 }
-
 

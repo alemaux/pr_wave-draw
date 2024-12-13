@@ -16,3 +16,4 @@ obj/ui_parameters.o
 obj/viewer.o
 obj/WaterSurface.o
 obj/Wave.o
+obj/wavedraw.o

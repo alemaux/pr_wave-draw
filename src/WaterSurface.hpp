@@ -69,6 +69,7 @@ public:
   void setStopTime(int end);
   void drawHeighField(std::string file);
 
+
 // #ifdef PROJECTED_GRID
 //   void setProjGrid(int i, int j, FLOAT x, FLOAT y);
 //   VEC3 getPosProjGrid(int i, int j) const;
@@ -120,6 +121,7 @@ private:
   Sphere sphere_pp;
   Sphere sphere_pp2;
 
+  std::list<VEC2> sourcesPos;
 };
 
 
