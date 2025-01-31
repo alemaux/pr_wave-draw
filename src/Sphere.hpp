@@ -17,8 +17,7 @@ private :
   static GLfloat* normals;
   
 public :
-  
-  Sphere(float s = 1);
+  Sphere(float s = 0.5);
   ~Sphere();
 
   void setColor(float r, float g, float b);

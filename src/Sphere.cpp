@@ -8,11 +8,6 @@
 GLfloat* Sphere::vertices = new GLfloat[Sphere::size_array];
 GLfloat* Sphere::normals = new GLfloat[Sphere::size_array];
 
-Sphere::Sphere(): Object() {
-    m_size = 0.5;
-    setColor(1, 1, 1);
-}
-
 Sphere::Sphere(float s): Object() {
     m_size = s;
     setColor(1, 1, 1);

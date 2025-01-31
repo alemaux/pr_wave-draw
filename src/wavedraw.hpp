@@ -10,7 +10,7 @@ class WaveDraw
 {
 public:
     std::vector<VEC2> positionSources(int nb_sources);
-    void setAmplitudeFromPoint(EquivalentSource *es, VEC2 point, FLOAT desired_height);
+    static void setSinglePointtoHeight(VEC2 pos, float height, EquivalentSource* source);
 private:
 
 };

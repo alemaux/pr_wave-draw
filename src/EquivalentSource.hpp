@@ -69,6 +69,8 @@ public:
   int getIndex() const;
   
   COMPLEX getAmpli() const;
+
+  FLOAT getDamping(VEC2 p) const;
 };
 
 #endif

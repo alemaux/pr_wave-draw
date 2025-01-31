@@ -33,6 +33,7 @@
 
 namespace settings {
 
+  extern bool doLoadTexture;
   extern FLOAT dt_; //second
 
   // Grid spec

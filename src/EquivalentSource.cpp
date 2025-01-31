@@ -221,3 +221,12 @@ COMPLEX EquivalentSource::getAmpli() const {
 int EquivalentSource::getIndex() const {
   return 0;
 }
+
+
+FLOAT EquivalentSource::getDamping(VEC2 p) const{
+    FLOAT rx = p[0] - pos(0);
+    FLOAT ry = p[1] - pos(1);
+    FLOAT r  = sqrt(pow(rx, 2.0) + pow(ry, 2.0));
+    FLOAT damp = damping(r, wave_number);
+    return damp;
+}

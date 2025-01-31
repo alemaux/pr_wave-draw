@@ -25,6 +25,7 @@ using namespace definitions;
 
 namespace settings {
 
+    bool doLoadTexture = true;
     FLOAT dt_ = 0.03;
 
     int n_rows_ = 150;

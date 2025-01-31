@@ -1,7 +1,9 @@
 #include "wavedraw.hpp"
+#include "settings.hpp"
+#include "error.hpp"
+
 #include <vector>
 #include<math.h>
-#include "settings.hpp"
 
 
 std::vector<VEC2> WaveDraw::positionSources(int nb_sources){
@@ -18,9 +20,20 @@ std::vector<VEC2> WaveDraw::positionSources(int nb_sources){
     return positions;
 }
 
-std::vector<COMPLEX> WaveDraw::invertMatrice(std::vector<EquivalentSource> sources, std::vector<VEC2> sample_points) {
+//std::vector<COMPLEX> WaveDraw::invertMatrice(std::vector<EquivalentSource> sources, std::vector<VEC2> sample_points) {
+//    int n = sources.size(), p = sample_points.size();
+//    //MAT2C matrice()
+//}
+//
+//std::vector<FLOAT> static WaveDraw::getEquationFromPoint(VEC2 pos, std::vector<EquivalentSource> sources){
+//    std::vector<FLOAT> coefs(sources.size());
+//    for(EquivalentSource source : sources){
+//        coefs.push_back(source.height(pos, 0f));
+//    }
+//    return coefs;
+//}
 
+void WaveDraw::setSinglePointtoHeight(VEC2 pos, float height, EquivalentSource* source){
+    float actualHeight = (*source).height(pos, 0);
+    source->setAmplitude(height / actualHeight);
 }
-
-
-

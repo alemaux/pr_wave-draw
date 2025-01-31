@@ -27,6 +27,7 @@
 #include "Grid.hpp"
 #include "ProjectedGrid.hpp"
 #include "Sphere.hpp"
+#include "EquivalentSource.hpp"
 
 #include <thread>
 
@@ -46,6 +47,7 @@ public:
 
   FLOAT height(int i, int j) const;
   void addEqSource(FLOAT x, FLOAT y, FLOAT wl = 0, COMPLEX ampli = COMPLEX(1, 0));
+  void addEqSource(EquivalentSource eq);
 
   void update();
   friend void updateSourcesAmplis(WaterSurface *ws);
@@ -83,20 +85,24 @@ public:
   FLOAT minWL() const;
   FLOAT maxWL() const;
 
+  std::vector<std::list<EquivalentSource*>> waves;
+  std::list<EquivalentSource*> getSourceList();
+
+  void addConstPoint(VEC3 pos);
+
 private:
   FLOAT step_wl;
   FLOAT min_wl, max_wl;
   int nb_wl;
-  
+
   Grid u;
   Grid pattern;
-  
+
   std::vector<Grid> ampli_re; //réel
   std::vector<Grid> ampli_im; //imaginaire
 
   int time;
 
-  std::vector<std::list<Wave*> > waves;
   std::vector<FLOAT> wave_lenghts;
 
   bool import_;
@@ -122,6 +128,7 @@ private:
   Sphere sphere_pp2;
 
   std::list<VEC2> sourcesPos;
+  std::list<VEC3> constraintsPos;
 };
 
 

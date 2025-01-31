@@ -23,8 +23,9 @@
 #include "viewer.hpp"
 #include "ui_parameters.hpp"
 #include "error.hpp"
-
+#include "settings.hpp"
 #include "plotter.hpp"
+#include "wavedraw.hpp"
 
 #include <QCursor>
 #include <QKeyEvent>
@@ -233,8 +234,11 @@ void Viewer::keyPressEvent(QKeyEvent *e) {
     update();
   } else if ((modifiers == Qt::NoButton) && (e -> key() == Qt::Key_Agrave)){ //Centre la scène avec à
     camera()->setOrientation(qglviewer::Quaternion());
-    camera()->showEntireScene();
-    camera()->setPosition(qglviewer::Vec(30, 15, camera()->position().z / 2));
+    if(!settings::doLoadTexture){
+        camera()->setPosition(qglviewer::Vec(settings::n_cols_ * settings::cell_size_ /2,settings::n_rows_ * settings::cell_size_ / 2, settings::n_cols_ * settings::cell_size_ * 1.22));
+    }else{
+        camera()->setPosition(qglviewer::Vec(settings::n_cols_ * settings::cell_size_ ,settings::n_rows_ * settings::cell_size_ / 2,  settings::n_cols_ * settings::cell_size_ * 1.2f ));
+    }
     handled = true;
     update();
   } else if ((modifiers == Qt::NoButton) && (e -> key() == Qt::Key_P)){ //affiche la position de la camera avec P
@@ -247,9 +251,40 @@ void Viewer::keyPressEvent(QKeyEvent *e) {
     std::cout<<center.x<<" "<<center.y<<std::endl;
     handled = true;
     update();
-  }else if ((e->key() == Qt::Key_H) && (modifiers == Qt::CTRL)){
-      Plotter::exportHeightMap("C:/msys64/home/alois/Waves-main/plots/map.png", &_surface, settings::n_rows_, settings::n_cols_);
-    handled = true;
+  }else if ((e->key() == Qt::Key_P) && (modifiers == Qt::CTRL)){
+        Plotter::exportHeightMap("C:/msys64/home/alois/Waves-main/plots/map.png", &_surface, settings::n_rows_, settings::n_cols_);
+        handled = true;
+  }else if((e->key() == Qt::Key_H)&& (modifiers == Qt::CTRL)){
+      int xheight = settings::n_cols_ +1, yheight = settings::n_rows_ +1;
+      while(xheight>settings::n_cols_ || xheight<0){
+          std::cout<<"Entrez une valeur de x : "<<endl;
+          std::cin>>xheight;
+      }
+      while(yheight>settings::n_cols_ || yheight<0){
+          std::cout<<"Entrez une valeur de y : "<<endl;
+          std::cin>>yheight;
+      }
+      std::cout<<"Hauteur au point x:"<<xheight<<", y:"<<yheight<<" : "<<_surface.height(xheight,yheight);
+      handled = true;
+
+  }else if ((e->key() == Qt::Key_W) && (modifiers == Qt::CTRL)){
+      _surface.reset();
+      VEC2 center = VEC2(settings::n_rows_ * settings::cell_size_ /2, settings::n_cols_ * settings::cell_size_ /2);
+      VEC2 offset = VEC2(2.0f * center.x(), center.y());
+      EquivalentSource eq = new EquivalentSource(settings::init_wl_);
+      eq.setPos(offset);
+      _surface.addEqSource(eq);
+
+      std::cout<<center[0]<<" "<<center[1]<<std::endl;
+
+      EquivalentSource *w = _surface.getSourceList().front();
+          ////Ici : crash dans certains cas mais pas d'autres --> hypothèse : w pointeur nul sur le premier élément d'un liste vide !!
+      FLOAT actualHeight = (w->height(center, 0)) * (w->getDamping(center));
+      if(actualHeight > 1e-4)w->setAmplitude(COMPLEX(1 / actualHeight, 0));
+      else std::cout<<"hauteur trop petite"<<std::endl;
+      _surface.addConstPoint(VEC3(center[0], center[1], 1.0f));
+      update();
+      handled = true;
   }
   if (!handled)
     QGLViewer::keyPressEvent(e);

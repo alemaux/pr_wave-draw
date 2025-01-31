@@ -52,8 +52,8 @@ WaterSurface::~WaterSurface() {
 }
 
 void WaterSurface::clear() {
-  std::list<Wave*>::iterator it;
-  std::vector<std::list<Wave*> >::iterator itwf;
+  std::list<EquivalentSource*>::iterator it;
+  std::vector<std::list<EquivalentSource*> >::iterator itwf;
   for (itwf= waves.begin(); itwf != waves.end(); ++itwf) {
     for (it = (*itwf).begin(); it != (*itwf).end(); ++it) {
       delete (*it);
@@ -64,6 +64,8 @@ void WaterSurface::clear() {
 
 void WaterSurface::reset() {
   clear();
+    sourcesPos.clear();
+  constraintsPos.clear();
   createTabs();
   sphere_source.setSize(0.5);
   sphere_source.setColor(0.8f, 0.2f, 1.0f);
@@ -80,30 +82,32 @@ void WaterSurface::reset() {
   if (load_conf) {
     importConfig(conf_file);
   }
+
   u = Grid(n_rows_, n_cols_, cell_size_);
   u.setColor(29.0/256.0,162.0/256.0,216.0/256.0);
 
-  pattern = Grid(n_rows_, n_cols_, cell_size_);
-  pattern.setColor(0.5, 0.5, 0.5);
-  pattern.loadTexture("test_texture2.png");
+  if(settings::doLoadTexture){
+    pattern = Grid(n_rows_, n_cols_, cell_size_);
+    pattern.setColor(0.5, 0.5, 0.5);
+    pattern.loadTexture("test_texture2.png");
+  }
+  //INFO("Wavelength: "<<nb_wl<<" wavelenths between "<<min_wl<<" and "<<max_wl);
   
-  INFO("Wavelength: "<<nb_wl<<" wavelenths between "<<min_wl<<" and "<<max_wl);
-  
-  time = 0;  
+  time = 0;
   update();
 
 
 #ifdef PLOT_RESULT
-  std::stringstream ss; 
+  std::stringstream ss;
   ss <<data_file<<"ampli.txt";
   std::string str(ss.str());
-  std::stringstream ss4; 
+  std::stringstream ss4;
   ss4 <<data_file<<"phase.txt";
   std::string str4(ss4.str());
-  std::stringstream ss5; 
+  std::stringstream ss5;
   ss5 <<data_file<<"ampli_dir.txt";
   std::string str5(ss5.str());
-  std::stringstream ss6; 
+  std::stringstream ss6;
   ss6 <<data_file<<"analytic.txt";
   std::string str6(ss6.str());
 
@@ -128,7 +132,7 @@ void WaterSurface::setLists() {
   }
    
   
-  waves = std::vector<std::list<Wave*> >(nb_wl);
+  waves = std::vector<std::list<EquivalentSource*> >(nb_wl);
   ampli_re = std::vector<Grid>(nb_wl);
   ampli_im = std::vector<Grid>(nb_wl);
   for (int i = 0; i < nb_wl; ++i) {
@@ -138,35 +142,35 @@ void WaterSurface::setLists() {
 }
 
 void WaterSurface::setAmpli() {
-    std::list<Wave*>::iterator it;
+    std::list<EquivalentSource*>::iterator it;
 
     for (int w = 0; w < nb_wl; ++w) {
       ampli_re[w].reset(0);
       ampli_im[w].reset(0);
-      std::list<Wave*> waves_wl = waves[w];
+      std::list<EquivalentSource*> waves_wl = waves[w];
 
-      for (it = waves_wl.begin(); it != waves_wl.end(); ++it) {
+        for (it = waves_wl.begin(); it != waves_wl.end(); ++it) {
 #pragma omp parallel for
-	for (int i = 0; i < n_rows_ - 1; i++) {
-	  FLOAT x = cell_size_*i;
-	  for (int j = 0; j < n_cols_ - 1; j++) {
-	    FLOAT y = cell_size_*j;
-	    ampli_re[w](i, j) += real((*it)->heightc(x, y, 0));
-	    ampli_im[w](i, j) += imag((*it)->heightc(x, y, 0));
-	  }
-	}
-      }
+            for (int i = 0; i < n_rows_ - 1; i++) {
+                FLOAT x = cell_size_*i;
+                for (int j = 0; j < n_cols_ - 1; j++) {
+                    FLOAT y = cell_size_*j;
+                    ampli_re[w](i, j) += real((*it)->heightc(x, y, 0));
+                    ampli_im[w](i, j) += imag((*it)->heightc(x, y, 0));
+                }
+            }
+        }
       
     }
 }
 
 void WaterSurface::setAmpli(FLOAT t) {
-    std::list<Wave*>::iterator it;
+    std::list<EquivalentSource*>::iterator it;
     for (int w = 0; w < nb_wl; ++w) {
         ampli_re[w].reset(0);
         ampli_im[w].reset(0);
 
-        std::list<Wave*> waves_wl = waves[w];
+        std::list<EquivalentSource*> waves_wl = waves[w];
 
         for (it = waves_wl.begin(); it != waves_wl.end(); ++it) {
             #pragma omp parallel for
@@ -193,7 +197,7 @@ void WaterSurface::addEqSource(FLOAT x, FLOAT y, FLOAT wl, COMPLEX ampli) {
     wl = wave_lenghts[nb_wl-1];
   }
   for (int ind = 0; ind < nb_wl && wave_lenghts[ind]<=wl; ++ind) {
-    Wave *w = new EquivalentSource(wave_lenghts[ind]);
+    EquivalentSource *w = new EquivalentSource(wave_lenghts[ind]);
     ((EquivalentSource*)w)->setPos(x, y);
     ((EquivalentSource*)w)->setAmplitude(ampli);
     waves[ind].push_back(w);
@@ -201,6 +205,9 @@ void WaterSurface::addEqSource(FLOAT x, FLOAT y, FLOAT wl, COMPLEX ampli) {
   sourcesPos.push_back(VEC2(x, y));
 }
 
+void WaterSurface::addEqSource(EquivalentSource eq){
+    WaterSurface::addEqSource(eq.getPos().x(), eq.getPos().y(), settings::init_wl_, 1);
+}
 
 
 void WaterSurface::update() {
@@ -239,14 +246,14 @@ void WaterSurface::updateHeight() {
 
 
 void WaterSurface::draw() {
-  u.draw();
-  
-  glPushMatrix();
-  glTranslatef(30, 0, 0);
-  pattern.draw();
-  glPopMatrix();
+    u.draw();
+    glPushMatrix();
+    glTranslatef(30, 0, 0);
+    pattern.draw();
+    glPopMatrix();
 
-  if (draw_sources) {
+    if (draw_sources) {
+        sphere_source.setColor(0.8f, 0.2f, 1.0f);
         for (auto &it : sourcesPos) {
             VEC2 c = it;
             glPushMatrix();
@@ -254,7 +261,15 @@ void WaterSurface::draw() {
             sphere_source.draw();
             glPopMatrix();
         }
-    }
+        sphere_source.setColor(0.0f, 1.0f, 0.0f);
+        for(auto &it : constraintsPos){
+            VEC3 c = it;
+            glPushMatrix();
+            glTranslatef(c[0], c[1], c[2]);
+            sphere_source.draw();
+            glPopMatrix();
+        }
+      }
 }
 
 
@@ -482,8 +497,12 @@ void WaterSurface::importConfig(std::string file) {
      	}
      	getline(is, line);
        }
-    } else {
-      ERROR(false, "Invalid configuration file \""<<file, line);
+    }
+    else if (line.substr(0,14) == "<load_texture>") {
+        settings::doLoadTexture = !settings::doLoadTexture;
+    }
+    else {
+        ERROR(false, "Invalid configuration file \""<<file, line);
     }
   }
   is.close();
@@ -550,3 +569,10 @@ FLOAT WaterSurface::maxWL() const {
     return wave_lenghts[nb_wl-1];
 }
 
+std::list<EquivalentSource*> WaterSurface::getSourceList() {
+    return waves[0];
+}
+
+void WaterSurface::addConstPoint(VEC3 pos){
+    constraintsPos.push_back(pos);
+}
