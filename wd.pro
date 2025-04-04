@@ -21,8 +21,9 @@ INCLUDEPATH *= $${INCLUDE_DIR}
                INCLUDEPATH += $${EIGEN}
                INCLUDEPATH += $${OPTIM}
 
-CONFIG -= debug debug_and_release
+CONFIG -= debug_and_release
 CONFIG *= release
+CONFIG += debug
 
 TEMPLATE = app
 TARGET   = wd
@@ -33,6 +34,7 @@ HEADERS  += $${SRC_DIR}*.h
 SOURCES  = $${SRC_DIR}*.cpp
 
 QMAKE_CXXFLAGS += -g -fopenmp -O3 -D__MODE_DEBUG=3 -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable -DOPTIM_ENABLE_EIGEN_WRAPPERS -Wdeprecated-declarations -Wdeprecated-copy
+QMAKE_CXXFLAGS += -g
 LIBS += -L./QGLViewer -lQGLViewer -lpthread -lgomp -fopenmp -LC:/msy64/mingw64/lib -lpng
 LIBS += -LC:/msys64/mingw64/bin/ -lSDL2 -lSDL2_image
 LIBS += -L./QGLViewer/ -lQGLViewer2

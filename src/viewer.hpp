@@ -22,8 +22,8 @@
 
 #include <QGLViewer/qglviewer.h>
 #include <QGLViewer/manipulatedFrame.h>
-#include "WaterSurface.hpp"
 #include <fstream>
+#include "WaterSurface.hpp"
 
 class Viewer : public QGLViewer {
 protected:

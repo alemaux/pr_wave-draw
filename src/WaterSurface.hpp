@@ -21,6 +21,7 @@
 #define WATERSURFACE_HPP
 
 #include <list>
+#include <thread>
 
 #include "definitions.hpp"
 #include "Wave.hpp"
@@ -29,7 +30,6 @@
 #include "Sphere.hpp"
 #include "EquivalentSource.hpp"
 
-#include <thread>
 
 class WaterSurface {
 public:
@@ -46,12 +46,14 @@ public:
   void setAmpli(FLOAT t);
 
   FLOAT height(int i, int j) const;
+  EquivalentSource* addSingleSource(FLOAT x, FLOAT y, FLOAT wl = 0, COMPLEX ampli = COMPLEX(1, 0));
   void addEqSource(FLOAT x, FLOAT y, FLOAT wl = 0, COMPLEX ampli = COMPLEX(1, 0));
-  void addEqSource(EquivalentSource eq);
+  void addEqSource(EquivalentSource* eq);
 
   void update();
   friend void updateSourcesAmplis(WaterSurface *ws);
   void updateHeight();
+  void refreshHeight();
 
   void draw();
 
@@ -81,6 +83,7 @@ public:
 // #endif
   VEC3 getPosGrid(int i, int j) const;
   VEC3 getPosGrid(int i) const;
+  int getTime();
 
   FLOAT minWL() const;
   FLOAT maxWL() const;
@@ -89,6 +92,7 @@ public:
   std::list<EquivalentSource*> getSourceList();
 
   void addConstPoint(VEC3 pos);
+  std::vector<VEC3> getConstrPoints();
 
 private:
   FLOAT step_wl;
@@ -128,7 +132,7 @@ private:
   Sphere sphere_pp2;
 
   std::list<VEC2> sourcesPos;
-  std::list<VEC3> constraintsPos;
+  std::vector<VEC3> constraintsPos;
 };
 
 

@@ -42,12 +42,12 @@ public:
   EquivalentSource(FLOAT wl);
   ~EquivalentSource();
 
-  void reset();  
+  void reset();
   
-  virtual FLOAT height(FLOAT x, FLOAT y, FLOAT time) const;
-  virtual FLOAT height(VEC2 p, FLOAT time) const;
-  virtual COMPLEX heightc(FLOAT x, FLOAT y, FLOAT time) const;
-  virtual COMPLEX heightc(VEC2 p, FLOAT time) const;
+  FLOAT height(FLOAT x, FLOAT y, FLOAT time) const;
+  FLOAT height(VEC2 p, FLOAT time) const;
+  COMPLEX heightc(FLOAT x, FLOAT y, FLOAT time) const;
+  COMPLEX heightc(VEC2 p, FLOAT time) const;
   COMPLEX heightc(VEC2 p) const;
   COMPLEX heightc(FLOAT x, FLOAT y) const;
   
@@ -66,6 +66,7 @@ public:
   VEC2 getPos() const;
   FLOAT getDistance(FLOAT x, FLOAT y) const;
   FLOAT getDistance(VEC2 p) const;
+  FLOAT getWL() const;
   int getIndex() const;
   
   COMPLEX getAmpli() const;

@@ -67,7 +67,7 @@ void WaterSurface::reset() {
     sourcesPos.clear();
   constraintsPos.clear();
   createTabs();
-  sphere_source.setSize(0.5);
+  sphere_source.setSize(0.1);
   sphere_source.setColor(0.8f, 0.2f, 1.0f);
   
   srand (std::time(NULL));
@@ -115,7 +115,7 @@ void WaterSurface::reset() {
   exportPhase(str4);
 #endif
 
-  INFO("DONE!   "<<nb_wl);
+  INFO("DONE! "<<nb_wl);
 }
 
 void WaterSurface::setLists() {
@@ -180,6 +180,7 @@ void WaterSurface::setAmpli(FLOAT t) {
                     FLOAT y = cell_size_*j;
                     ampli_re[w](i, j) += real((*it)->heightc(x, y, t));
                     ampli_im[w](i, j) += imag((*it)->heightc(x, y, t));
+                    //if(i==150&&(j==135||j==165))std::cout<<ampli_re[w](i,j)<<" "<<ampli_im[w](i,j)<<std::endl;
                 }
             }
         }
@@ -189,6 +190,18 @@ void WaterSurface::setAmpli(FLOAT t) {
 
 FLOAT WaterSurface::height(int i, int j) const {
   return u(i, j);
+}
+
+EquivalentSource* WaterSurface::addSingleSource(FLOAT x, FLOAT y, FLOAT wl, COMPLEX ampli){
+    if(wl==0){
+        wl = wave_lenghts[nb_wl-1];
+    }
+    EquivalentSource *w = new EquivalentSource(wl);
+    w->setPos(x, y);
+    w->setAmplitude(ampli);
+    waves[0].push_back(w);
+    sourcesPos.push_back(VEC2(x,y));
+    return w;
 }
 
 
@@ -205,8 +218,8 @@ void WaterSurface::addEqSource(FLOAT x, FLOAT y, FLOAT wl, COMPLEX ampli) {
   sourcesPos.push_back(VEC2(x, y));
 }
 
-void WaterSurface::addEqSource(EquivalentSource eq){
-    WaterSurface::addEqSource(eq.getPos().x(), eq.getPos().y(), settings::init_wl_, 1);
+void WaterSurface::addEqSource(EquivalentSource* eq){
+    return WaterSurface::addEqSource(eq->getPos().x(), eq->getPos().y(), eq->getWL(), 1);
 }
 
 
@@ -229,19 +242,33 @@ void WaterSurface::update() {
 void WaterSurface::updateHeight() {
   u.reset(0.0);
   FLOAT t = time*dt_;
-
   setAmpli(t);
   for (int f = 0; f < nb_wl; ++f) {
     FLOAT k =  2*M_PI/wave_lenghts[f];
     FLOAT omega = angular_vel(k);
 #pragma omp parallel for
       for (int i = 0; i < n_rows_ - 1; i++) {
-	for (int j = 0; j < n_cols_ - 1; j++) {
-	  u(i, j) += real(COMPLEX(ampli_re[f](i, j), ampli_im[f](i, j))*exp(-omega*t*i_));
-	}
+        for (int j = 0; j < n_cols_ - 1; j++) {
+          u(i, j) += real(COMPLEX(ampli_re[f](i, j), ampli_im[f](i, j))*exp(-omega*t*i_));
+        }
       }
-       
-  }
+    }
+}
+
+
+void WaterSurface::refreshHeight() {
+    time = 0;
+    u.reset(0.0);
+    setAmpli(0);
+    for (int f = 0; f < nb_wl; ++f) {
+        FLOAT k =  2*M_PI/wave_lenghts[f];
+#pragma omp parallel for
+        for (int i = 0; i < n_rows_ - 1; i++) {
+            for (int j = 0; j < n_cols_ - 1; j++) {
+                u(i, j) += ampli_re[f](i, j);
+            }
+        }
+    }
 }
 
 
@@ -385,6 +412,7 @@ void WaterSurface::importConfig(std::string file) {
 	if (line.substr(0,5) == "<min>") {
 	  std::istringstream s(line.substr(5));
 	  s >> min_wl;
+      init_wl_ = min_wl;
 	} else if (line.substr(0,5) == "<max>") {
 	  std::istringstream s(line.substr(5));
 	  s >> max_wl;
@@ -395,7 +423,7 @@ void WaterSurface::importConfig(std::string file) {
 	} else if (line.substr(0,6) == "<step>") {
 	  std::istringstream s(line.substr(6));
 	  s >> step_wl;
-	  nb_wl = (max_wl - min_wl)/(FLOAT)(step_wl);
+      nb_wl = std::max((FLOAT)1, (max_wl - min_wl)/(FLOAT)(step_wl));
 	} else {
       ERROR(false, "Invalid configuration file (wave lenghts)\""<<file, line);
 	}
@@ -575,4 +603,12 @@ std::list<EquivalentSource*> WaterSurface::getSourceList() {
 
 void WaterSurface::addConstPoint(VEC3 pos){
     constraintsPos.push_back(pos);
+}
+
+std::vector<VEC3> WaterSurface::getConstrPoints(){
+    return constraintsPos;
+}
+
+int WaterSurface::getTime(){
+    return time;
 }

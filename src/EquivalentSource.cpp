@@ -54,7 +54,7 @@ void EquivalentSource::reset() {
 }
 
 
-FLOAT EquivalentSource::height(FLOAT x, FLOAT y, FLOAT time) const {
+FLOAT EquivalentSource::height(FLOAT x, FLOAT y, FLOAT time) const{
   COMPLEX ampli_cur = ampli;
   FLOAT rx = x - pos(0);
   FLOAT ry = y - pos(1);
@@ -69,7 +69,7 @@ FLOAT EquivalentSource::height(FLOAT x, FLOAT y, FLOAT time) const {
   return out;
 }
 
-FLOAT EquivalentSource::height(VEC2 p, FLOAT time) const {
+FLOAT EquivalentSource::height(VEC2 p, FLOAT time) const{
   return height(p(0), p(1), time);
 }
 
@@ -80,7 +80,7 @@ COMPLEX EquivalentSource::heightc(VEC2 p, FLOAT time) const {
 
 
 COMPLEX EquivalentSource::heightc(FLOAT x, FLOAT y, FLOAT time) const {
-  COMPLEX ampli_cur = ampli;
+    COMPLEX ampli_cur = ampli;
   FLOAT rx = x - pos(0);
   FLOAT ry = y - pos(1);
   FLOAT r  = sqrt(pow(rx, 2.0) + pow(ry, 2.0));
@@ -96,7 +96,7 @@ COMPLEX EquivalentSource::heightc(FLOAT x, FLOAT y, FLOAT time) const {
 }
 
 
-COMPLEX EquivalentSource::heightc(VEC2 p) const {
+COMPLEX EquivalentSource::heightc(VEC2 p) const{
   return heightc(p(0), p(1));
 }
 
@@ -106,10 +106,9 @@ COMPLEX EquivalentSource::heightc(FLOAT x, FLOAT y) const {
   FLOAT r  = sqrt(pow(rx, 2.0) + pow(ry, 2.0));
   FLOAT damp = damping(r, wave_number);
   COMPLEX out(0, 0);
-
   if (damp > 0.02) {
     if (r != 0) {
-      out = damp*addWaves(wave_number*r);
+      out = damp*addWaves(wave_number*r)*ampli;
     }
   }
   return out;
@@ -220,6 +219,10 @@ COMPLEX EquivalentSource::getAmpli() const {
 
 int EquivalentSource::getIndex() const {
   return 0;
+}
+
+FLOAT EquivalentSource::getWL() const {
+    return wave_length;
 }
 
 

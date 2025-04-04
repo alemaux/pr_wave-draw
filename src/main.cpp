@@ -1,7 +1,7 @@
-#include "viewer.hpp"
-#include <qapplication.h>
 #include <windows.h>
-#include <stdio.h>
+//#include <stdio.h>
+#include <qapplication.h>
+#include "viewer.hpp"
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {

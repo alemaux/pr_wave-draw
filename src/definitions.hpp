@@ -21,11 +21,10 @@
 #define DEFINITIONS_HPP
 
 #include <Eigen/Core>
-
+#include <minwindef.h>
 using namespace Eigen;
 
 //#define DOUBLE_PRECISION
-
 #ifdef DOUBLE_PRECISION
 
 #define FLOAT double
@@ -33,7 +32,7 @@ using namespace Eigen;
 #define VEC3 Vector3d
 #define VEC4 Vector4d
 #define VECX VectorXd
-#define MAT2 Matrix2d
+//#define MAT2 Matrix2d
 #define MAT3 Matrix3d
 #define MAT4 Matrix4d
 #define MATX MatrixXd
@@ -46,8 +45,7 @@ using namespace Eigen;
 #define MATXC MatrixXcd
 
 #else
-
-#define FLOAT float
+//#define FLOAT float
 #define VEC2 Vector2f
 #define VEC3 Vector3f
 #define VEC4 Vector4f

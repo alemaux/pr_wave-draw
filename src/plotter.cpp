@@ -1,13 +1,14 @@
-#include "plotter.hpp"
-#include"C:/msys64/mingw64/include/png.h"
-#include<string>
-#include<limits>
-#include<fstream>
+#include <string>
+#include <limits>
+#include <fstream>
 #include <iostream>
 #include <sstream>
-#include<vector>
-#include"error.hpp"
-#include"WaterSurface.hpp"
+#include <vector>
+
+#include "plotter.hpp"
+#include "error.hpp"
+#include "WaterSurface.hpp"
+#include "C:/msys64/mingw64/include/png.h"
 
 void Plotter::createHeightMap(std::string inputFilename, std::string outputFilename, int nrow, int ncol){
     INFO("Creating Heightmap from "<< inputFilename);

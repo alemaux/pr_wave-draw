@@ -19,6 +19,12 @@
  WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 *****************************************************************************/
+#include <QCursor>
+#include <QKeyEvent>
+#include <QMap>
+#include <QMenu>
+#include <QMouseEvent>
+
 #include "Grid.hpp"
 #include "viewer.hpp"
 #include "ui_parameters.hpp"
@@ -26,12 +32,6 @@
 #include "settings.hpp"
 #include "plotter.hpp"
 #include "wavedraw.hpp"
-
-#include <QCursor>
-#include <QKeyEvent>
-#include <QMap>
-#include <QMenu>
-#include <QMouseEvent>
 
 using namespace std;
 
@@ -254,6 +254,9 @@ void Viewer::keyPressEvent(QKeyEvent *e) {
   }else if ((e->key() == Qt::Key_P) && (modifiers == Qt::CTRL)){
         Plotter::exportHeightMap("C:/msys64/home/alois/Waves-main/plots/map.png", &_surface, settings::n_rows_, settings::n_cols_);
         handled = true;
+  }else if ((e->key() == Qt::Key_E) && (modifiers == Qt::CTRL)){
+      WaveDraw::evaluateSolution(&_surface);
+      handled = true;
   }else if((e->key() == Qt::Key_H)&& (modifiers == Qt::CTRL)){
       int xheight = settings::n_cols_ +1, yheight = settings::n_rows_ +1;
       while(xheight>settings::n_cols_ || xheight<0){
@@ -268,23 +271,33 @@ void Viewer::keyPressEvent(QKeyEvent *e) {
       handled = true;
 
   }else if ((e->key() == Qt::Key_W) && (modifiers == Qt::CTRL)){
+      std::cout<<"-------------------"<<std::endl;
+      _surface.reset();
+      VEC3 center = VEC3(settings::n_rows_ * settings::cell_size_ /2, settings::n_cols_ * settings::cell_size_ /2, 1.0);
+      WaveDraw::setSinglePointtoHeight(center, VEC2(2*center.x(), 2*center.y()), &_surface);
+      _surface.refreshHeight();
+      std::cout<<"New height (surface-wise) : "<<_surface.height(center.x() / settings::cell_size_,center.y()/settings::cell_size_)<<std::endl;
+      std::cout<<"-------------------"<<std::endl;
+      handled = true;
+  }else if ((e->key() == Qt::Key_Q) && (modifiers == Qt::CTRL)){
+      std::cout<<"-------------------"<<std::endl;
       _surface.reset();
       VEC2 center = VEC2(settings::n_rows_ * settings::cell_size_ /2, settings::n_cols_ * settings::cell_size_ /2);
-      VEC2 offset = VEC2(2.0f * center.x(), center.y());
-      EquivalentSource eq = new EquivalentSource(settings::init_wl_);
-      eq.setPos(offset);
-      _surface.addEqSource(eq);
+      _surface.addConstPoint(VEC3(1.1*center.x(), center.y(), 1.0));
+      _surface.addConstPoint(VEC3(0.9*center.x(), center.y(), 1.0));
+      WaveDraw::setAmplisFromConstr(&_surface);
 
-      std::cout<<center[0]<<" "<<center[1]<<std::endl;
+//      std::cout<<"Surface height from viewer : "<<_surface.height(0.9*center.x()/ settings::cell_size_, center.y()/settings::cell_size_)<<std::endl;
+//      std::cout<<"Surface height from viewer : "<<_surface.height(1.1*center.x()/ settings::cell_size_, center.y()/settings::cell_size_)<<std::endl;
 
-      EquivalentSource *w = _surface.getSourceList().front();
-          ////Ici : crash dans certains cas mais pas d'autres --> hypothèse : w pointeur nul sur le premier élément d'un liste vide !!
-      FLOAT actualHeight = (w->height(center, 0)) * (w->getDamping(center));
-      if(actualHeight > 1e-4)w->setAmplitude(COMPLEX(1 / actualHeight, 0));
-      else std::cout<<"hauteur trop petite"<<std::endl;
-      _surface.addConstPoint(VEC3(center[0], center[1], 1.0f));
-      update();
+      std::cout<<"-------------------"<<std::endl;
       handled = true;
+  } else if ((e->key() == Qt::Key_T)&&(modifiers == Qt::CTRL)){
+      WaveDraw::test(&_surface);
+      VEC2 center = VEC2(settings::n_rows_ * settings::cell_size_ /2, settings::n_cols_ * settings::cell_size_ /2);
+      VEC2 testPoint = VEC2(1.2*center.x(), 1.2*center.y());
+      std::cout<<"surface height (viewer-side): "<<_surface.height(testPoint.x() / settings::cell_size_, testPoint.y() / settings::cell_size_)<<std::endl;
+
   }
   if (!handled)
     QGLViewer::keyPressEvent(e);

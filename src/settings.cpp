@@ -125,7 +125,11 @@ namespace settings {
     }
 
     COMPLEX derderHankel(FLOAT x) {
+#ifdef DOUBLE_PRECISION
+        return sqrtf((FLOAT)2.0/(FLOAT)M_PI)*(3.0f/4.0f*powf(x, -2.5) - i_*pow(x, -1.5) - powf(x, -0.5))*exp(i_*(x - (FLOAT)(M_PI/4.0)));
+#else
         return sqrtf((FLOAT)2.0/(FLOAT)M_PI)*(3.0f/4.0f*powf(x, -2.5) - i_*powf(x, -1.5) - powf(x, -0.5))*exp(i_*(x - (FLOAT)(M_PI/4.0)));
+#endif
     }
 
 
